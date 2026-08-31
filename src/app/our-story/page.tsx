@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Pass } from '@/components/motion/Pass';
 import { btn } from '@/components/ui/button';
 import { getProduct } from '@/data/products';
 
@@ -74,18 +75,20 @@ export default function OurStoryPage() {
             number of each.
           </p>
 
-          <dl className="border-ink-line mt-12 grid max-w-lg grid-cols-2 gap-y-8 border-t pt-8 sm:grid-cols-3">
-            {[
-              ['2023', 'Started in Brunswick'],
-              ['4', 'Drops a year, maximum'],
-              ['Never', 'Restocked'],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <dt className="font-display text-display-m">{value}</dt>
-                <dd className="label text-ash mt-2">{label}</dd>
-              </div>
-            ))}
-          </dl>
+          <Pass>
+            <dl className="border-ink-line mt-12 grid max-w-lg grid-cols-2 gap-y-8 border-t pt-8 sm:grid-cols-3">
+              {[
+                ['2023', 'Started in Brunswick'],
+                ['4', 'Drops a year, maximum'],
+                ['Never', 'Restocked'],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <dt className="font-display text-display-m">{value}</dt>
+                  <dd className="label text-ash mt-2">{label}</dd>
+                </div>
+              ))}
+            </dl>
+          </Pass>
         </div>
         {hero && (
           <div className="lg:col-span-5">
@@ -106,28 +109,32 @@ export default function OurStoryPage() {
       <section className="border-ink-line bg-ink-raised border-y">
         <div className="shell py-section">
           <h2 className="label text-flame">How it went</h2>
-          <ol className="bg-ink-line mt-10 grid gap-px md:grid-cols-2 xl:grid-cols-4">
-            {CHAPTERS.map((chapter) => (
-              <li key={chapter.year} className="bg-ink-raised p-6 lg:p-8">
-                <p className="font-display text-display-m text-flame">{chapter.year}</p>
-                <h3 className="font-display mt-4 text-xl uppercase">{chapter.title}</h3>
-                <p className="text-ash mt-3 text-sm leading-relaxed">{chapter.body}</p>
-              </li>
-            ))}
-          </ol>
+          <Pass>
+            <ol className="bg-ink-line mt-10 grid gap-px md:grid-cols-2 xl:grid-cols-4">
+              {CHAPTERS.map((chapter) => (
+                <li key={chapter.year} className="bg-ink-raised p-6 lg:p-8">
+                  <p className="font-display text-display-m text-flame">{chapter.year}</p>
+                  <h3 className="font-display mt-4 text-xl uppercase">{chapter.title}</h3>
+                  <p className="text-ash mt-3 text-sm leading-relaxed">{chapter.body}</p>
+                </li>
+              ))}
+            </ol>
+          </Pass>
         </div>
       </section>
 
       <section className="shell py-section">
-        <figure className="mx-auto max-w-[46ch] text-center">
-          <blockquote className="font-display text-display-l text-balance uppercase">
-            “The warrior nobody is watching is the only one that counts.”
-          </blockquote>
-          <figcaption className="label text-ash mt-6">
-            <span className="font-jp text-bone text-base tracking-normal">武士道</span> —
-            bushidō, the way of the warrior
-          </figcaption>
-        </figure>
+        <Pass>
+          <figure className="mx-auto max-w-[46ch] text-center">
+            <blockquote className="font-display text-display-l text-balance uppercase">
+              “The warrior nobody is watching is the only one that counts.”
+            </blockquote>
+            <figcaption className="label text-ash mt-6">
+              <span className="font-jp text-bone text-base tracking-normal">武士道</span>{' '}
+              — bushidō, the way of the warrior
+            </figcaption>
+          </figure>
+        </Pass>
       </section>
 
       <section className="border-ink-line border-t">
@@ -148,26 +155,28 @@ export default function OurStoryPage() {
           </div>
           <div className="lg:col-span-7">
             <h2 className="font-display text-display-l uppercase">What we hold to</h2>
-            <ul className="divide-ink-line border-ink-line mt-10 divide-y border-y">
-              {VALUES.map((value) => (
-                <li key={value.title} className="flex gap-6 py-6">
-                  <span className="shrink-0 text-center">
-                    <span className="font-jp block text-3xl leading-none">
-                      {value.kanji}
+            <Pass>
+              <ul className="divide-ink-line border-ink-line mt-10 divide-y border-y">
+                {VALUES.map((value) => (
+                  <li key={value.title} className="flex gap-6 py-6">
+                    <span className="shrink-0 text-center">
+                      <span className="font-jp block text-3xl leading-none">
+                        {value.kanji}
+                      </span>
+                      <span className="label text-ash mt-2 block">{value.romaji}</span>
                     </span>
-                    <span className="label text-ash mt-2 block">{value.romaji}</span>
-                  </span>
-                  <span>
-                    <span className="font-display block text-xl uppercase">
-                      {value.title}
+                    <span>
+                      <span className="font-display block text-xl uppercase">
+                        {value.title}
+                      </span>
+                      <span className="text-ash mt-2 block text-sm leading-relaxed">
+                        {value.body}
+                      </span>
                     </span>
-                    <span className="text-ash mt-2 block text-sm leading-relaxed">
-                      {value.body}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </Pass>
           </div>
         </div>
       </section>

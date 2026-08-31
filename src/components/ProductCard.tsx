@@ -9,9 +9,13 @@ import type { Product } from '@/lib/types';
 const GRID_SIZES = '(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw';
 
 /**
- * Hovering swaps front print for back print. On these tees the back is the
- * reason people buy, so the hover shows the customer something they want rather
- * than just scaling the card up.
+ * The back print is the reason people buy these tees, so hovering reveals it —
+ * but as a slanted ink wipe rather than a crossfade. The card's own colourway
+ * runs across the top on the same beat, which is the only other place a
+ * per-product accent is allowed to show up in the grid.
+ *
+ * Everything is driven by `group-hover` and `group-focus-within`, so a keyboard
+ * user gets exactly what a mouse user gets.
  */
 export function ProductCard({
   product,
@@ -26,7 +30,10 @@ export function ProductCard({
   const isNew = product.tags.includes('new');
 
   return (
-    <article className="group relative">
+    <article
+      className="group relative"
+      style={{ '--accent': product.accent } as React.CSSProperties}
+    >
       <Link href={`/drop/${product.slug}`} className="block focus-visible:outline-none">
         <div className="bg-ink-raised relative aspect-[4/5] overflow-hidden">
           <Image
@@ -36,11 +43,12 @@ export function ProductCard({
             sizes={sizes}
             priority={priority}
             className={cn(
-              'object-cover transition-opacity duration-500 ease-out',
-              !soldOut && 'group-hover:opacity-0',
+              'object-cover transition-transform duration-[900ms] ease-out',
+              !soldOut && 'group-focus-within:scale-[1.04] group-hover:scale-[1.04]',
               soldOut && 'opacity-45 grayscale',
             )}
           />
+
           {!soldOut && (
             <Image
               src={product.images.back}
@@ -48,7 +56,21 @@ export function ProductCard({
               fill
               sizes={sizes}
               loading="lazy"
-              className="object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+              className={
+                'object-cover transition-[clip-path] duration-[850ms] ease-[cubic-bezier(0.16,1,0.3,1)] ' +
+                '[clip-path:polygon(0_0,0_0,0_100%,0_100%)] ' +
+                'group-hover:[clip-path:polygon(0_0,118%_0,100%_100%,0_100%)] ' +
+                'group-focus-within:[clip-path:polygon(0_0,118%_0,100%_100%,0_100%)]'
+              }
+            />
+          )}
+
+          {/* The squeegee edge, in the piece's own colourway */}
+          {!soldOut && (
+            <span
+              aria-hidden
+              className="absolute inset-x-0 top-0 h-[3px] origin-left scale-x-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-focus-within:scale-x-100 group-hover:scale-x-100"
+              style={{ backgroundColor: 'var(--accent)' }}
             />
           )}
 

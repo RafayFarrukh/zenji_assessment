@@ -6,6 +6,7 @@ import { BuyBox } from '@/components/BuyBox';
 import { ProductGallery } from '@/components/ProductGallery';
 import { ProductGrid } from '@/components/ProductGrid';
 import { SectionHeading } from '@/components/Section';
+import { Pass } from '@/components/motion/Pass';
 import { Badge } from '@/components/ui/Badge';
 import { Price } from '@/components/ui/Price';
 import { getProduct, getRelated, products } from '@/data/products';
@@ -263,11 +264,13 @@ export default async function ProductPage({ params }: { params: Params }) {
       </div>
 
       <section className="shell mt-section">
-        <SectionHeading
-          eyebrow="From the same drop"
-          title="You may also like"
-          action={{ href: '/drop', label: 'All ten pieces' }}
-        />
+        <Pass bar>
+          <SectionHeading
+            eyebrow="From the same drop"
+            title="You may also like"
+            action={{ href: '/drop', label: 'All ten pieces' }}
+          />
+        </Pass>
         <div className="pb-section mt-10">
           <ProductGrid products={related} />
         </div>

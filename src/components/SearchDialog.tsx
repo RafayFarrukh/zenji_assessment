@@ -129,10 +129,11 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
           )}
 
           <ul>
-            {results.map((product) => (
+            {results.map((product, i) => (
               <li
                 key={product.slug}
-                className="border-ink-line border-t first:border-t-0"
+                className="pass-now border-ink-line border-t first:border-t-0"
+                style={{ '--pass-delay': `${i * 45}ms` } as React.CSSProperties}
               >
                 <Link
                   href={`/drop/${product.slug}`}

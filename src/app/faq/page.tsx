@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Accordion } from '@/components/Accordion';
+import { Pass } from '@/components/motion/Pass';
 
 export const metadata: Metadata = {
   title: 'Help — shipping, returns & sizing',
@@ -122,10 +123,12 @@ export default function FaqPage() {
 
         <div className="lg:col-span-9">
           {SECTIONS.map((section) => (
-            <section key={section.id} id={section.id} className="mb-12 scroll-mt-24">
-              <h2 className="font-display text-display-m uppercase">{section.title}</h2>
-              <Accordion className="mt-5" items={section.items} />
-            </section>
+            <Pass key={section.id} bar>
+              <section id={section.id} className="mb-12 scroll-mt-24">
+                <h2 className="font-display text-display-m uppercase">{section.title}</h2>
+                <Accordion className="mt-5" items={section.items} />
+              </section>
+            </Pass>
           ))}
 
           <div className="border-ink-line border p-6 lg:p-8">

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Pass } from '@/components/motion/Pass';
 import { COLLECTION, products } from '@/data/products';
 import { cn } from '@/lib/cn';
 
@@ -118,28 +119,34 @@ export default async function LookbookPage({
       <ul className="mt-10 columns-2 gap-4 md:columns-3 xl:columns-4 [&>li]:mb-4">
         {visible.map((frame, i) => (
           <li key={frame.key} className="break-inside-avoid">
-            <Link href={`/drop/${frame.slug}`} className="group block">
-              <div
-                className={cn(
-                  'bg-ink-raised relative overflow-hidden',
-                  frame.kind === 'street' ? 'aspect-[3/4]' : 'aspect-[4/5]',
-                )}
-              >
-                <Image
-                  src={frame.src}
-                  alt={frame.alt}
-                  fill
-                  loading={i < 4 ? undefined : 'lazy'}
-                  priority={i < 4}
-                  sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                />
-              </div>
-              <div className="mt-3 flex items-baseline justify-between gap-3">
-                <p className="label text-bone truncate">{frame.name}</p>
-                <p className="label text-ash shrink-0">{frame.caption}</p>
-              </div>
-            </Link>
+            <Pass delay={(i % 4) * 70}>
+              <Link href={`/drop/${frame.slug}`} className="group block">
+                <div
+                  className={cn(
+                    'bg-ink-raised relative overflow-hidden',
+                    frame.kind === 'street' ? 'aspect-[3/4]' : 'aspect-[4/5]',
+                  )}
+                >
+                  <Image
+                    src={frame.src}
+                    alt={frame.alt}
+                    fill
+                    loading={i < 4 ? undefined : 'lazy'}
+                    priority={i < 4}
+                    sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+                    className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
+                  />
+                  <span
+                    aria-hidden
+                    className="bg-ink/0 group-hover:bg-ink/20 absolute inset-0 transition-colors duration-500"
+                  />
+                </div>
+                <div className="mt-3 flex items-baseline justify-between gap-3">
+                  <p className="label text-bone truncate">{frame.name}</p>
+                  <p className="label text-ash shrink-0">{frame.caption}</p>
+                </div>
+              </Link>
+            </Pass>
           </li>
         ))}
       </ul>

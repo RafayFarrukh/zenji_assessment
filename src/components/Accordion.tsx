@@ -3,6 +3,10 @@ import { cn } from '@/lib/cn';
 /**
  * Native `<details>` — no client JavaScript, keyboard and screen-reader
  * behaviour for free, and it still works if the bundle never arrives.
+ *
+ * The `accordion` class opts into the height transition in globals.css, which
+ * is behind `@supports (interpolate-size: allow-keywords)`. Browsers without it
+ * still open and close, just instantly.
  */
 export function Accordion({
   items,
@@ -14,7 +18,7 @@ export function Accordion({
   return (
     <div className={cn('divide-ink-line border-ink-line divide-y border-y', className)}>
       {items.map((item) => (
-        <details key={item.title} id={item.id} className="group">
+        <details key={item.title} id={item.id} className="accordion group">
           <summary className="font-display flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg uppercase marker:content-none [&::-webkit-details-marker]:hidden">
             {item.title}
             <span

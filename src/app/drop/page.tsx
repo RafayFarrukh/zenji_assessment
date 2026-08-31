@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Pass } from '@/components/motion/Pass';
 import { ProductGrid } from '@/components/ProductGrid';
 import { products } from '@/data/products';
 import { cn } from '@/lib/cn';
@@ -36,14 +37,16 @@ export default async function DropPage({ searchParams }: { searchParams: SearchP
 
   return (
     <div className="shell py-12 lg:py-16">
-      <header className="border-ink-line border-b pb-8">
-        <p className="label text-flame">Collection 01</p>
-        <h1 className="font-display text-display-xl mt-4 uppercase">The Origin Drop</h1>
-        <p className="text-body-l text-ash mt-6 max-w-[56ch]">
-          Ten pieces cut oversized in 240gsm heavyweight cotton, garment washed and
-          screen-printed front and back. Limited stock — when a size goes, it goes.
-        </p>
-      </header>
+      <Pass bar>
+        <header className="border-ink-line border-b pb-8">
+          <p className="label text-flame">Collection 01</p>
+          <h1 className="font-display text-display-xl mt-4 uppercase">The Origin Drop</h1>
+          <p className="text-body-l text-ash mt-6 max-w-[56ch]">
+            Ten pieces cut oversized in 240gsm heavyweight cotton, garment washed and
+            screen-printed front and back. Limited stock — when a size goes, it goes.
+          </p>
+        </header>
+      </Pass>
 
       <div className="border-ink-line flex flex-col gap-6 border-b py-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
