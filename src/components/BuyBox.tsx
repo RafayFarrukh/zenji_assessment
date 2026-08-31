@@ -1,19 +1,23 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { flyToCart } from '@/components/motion/fly-to-cart';
 import { Price } from '@/components/ui/Price';
 import { btn } from '@/components/ui/button';
 import { CheckIcon } from '@/components/ui/icons';
+import { FREE_SHIPPING_THRESHOLD_AUD } from '@/data/products';
 import { useCart } from '@/lib/cart-store';
 import { cn } from '@/lib/cn';
-import { FREE_SHIPPING_THRESHOLD_AUD } from '@/data/products';
 import { LOW_STOCK_AT, formatAudCompact, isSoldOut } from '@/lib/pricing';
 import { SIZES, type Product, type Size } from '@/lib/types';
 
 export function BuyBox({ product }: { product: Product }) {
   const add = useCart((s) => s.add);
+  const openCart = useCart((s) => s.open);
+
   const [size, setSize] = useState<Size | null>(null);
   const [showSizeError, setShowSizeError] = useState(false);
+  const [shake, setShake] = useState(false);
   const [added, setAdded] = useState(false);
   const [inlineVisible, setInlineVisible] = useState(true);
 
@@ -41,18 +45,34 @@ export function BuyBox({ product }: { product: Product }) {
     return () => clearTimeout(id);
   }, [added]);
 
+  useEffect(() => {
+    if (!shake) return;
+    const id = setTimeout(() => setShake(false), 450);
+    return () => clearTimeout(id);
+  }, [shake]);
+
   function handleAdd() {
     if (soldOut) return;
+
     if (!size) {
+      // Say it, shake it, and put the cursor on the first size that exists.
       setShowSizeError(true);
+      setShake(true);
       pickerRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
       pickerRef.current
         ?.querySelector<HTMLButtonElement>('button:not(:disabled)')
         ?.focus();
       return;
     }
+
     add(product.slug, size);
     setAdded(true);
+
+    // Send the piece into the bag, and only open the drawer once it lands —
+    // otherwise the panel covers the animation that explains what happened.
+    const flight = flyToCart(product.images.front);
+    if (flight === 0) openCart();
+    else setTimeout(openCart, flight - 60);
   }
 
   return (
@@ -72,7 +92,7 @@ export function BuyBox({ product }: { product: Product }) {
           role="radiogroup"
           aria-label="Select a size"
           aria-describedby="size-help"
-          className="mt-3 grid grid-cols-6 gap-2"
+          className={cn('mt-3 grid grid-cols-6 gap-2', shake && 'shake-once')}
         >
           {SIZES.map((s) => {
             const stock = product.stock[s];
@@ -90,10 +110,13 @@ export function BuyBox({ product }: { product: Product }) {
                   setShowSizeError(false);
                 }}
                 className={cn(
-                  'font-display relative flex h-12 items-center justify-center border text-sm tracking-[0.06em] transition-colors',
+                  'font-display relative flex h-12 items-center justify-center border text-sm tracking-[0.06em]',
+                  'transition-[background-color,border-color,color,transform] duration-200',
                   out && 'border-ink-line text-ash/50 cursor-not-allowed',
                   !out && selected && 'border-bone bg-bone text-ink',
-                  !out && !selected && 'border-ink-line text-bone hover:border-bone',
+                  !out &&
+                    !selected &&
+                    'border-ink-line text-bone hover:border-bone hover:-translate-y-0.5',
                 )}
               >
                 {s}
@@ -135,17 +158,27 @@ export function BuyBox({ product }: { product: Product }) {
           type="button"
           onClick={handleAdd}
           disabled={soldOut}
-          className={btn('primary', 'lg', 'w-full')}
-        >
-          {soldOut ? (
-            'Sold out — no restock'
-          ) : added ? (
-            <>
-              <CheckIcon className="h-4 w-4" /> Added to cart
-            </>
-          ) : (
-            'Add to cart'
+          className={cn(
+            btn('primary', 'lg', 'group w-full overflow-hidden'),
+            'relative transition-transform duration-200 active:scale-[0.985]',
           )}
+        >
+          {/* A lighter pass sweeps across the button on hover */}
+          <span
+            aria-hidden
+            className="bg-flame-hi absolute inset-0 origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100"
+          />
+          <span className="relative flex items-center gap-2">
+            {soldOut ? (
+              'Sold out — no restock'
+            ) : added ? (
+              <>
+                <CheckIcon className="h-4 w-4" /> Added to cart
+              </>
+            ) : (
+              'Add to cart'
+            )}
+          </span>
         </button>
         <p className="text-ash mt-3 text-center text-xs">
           Free standard shipping over {formatAudCompact(FREE_SHIPPING_THRESHOLD_AUD)} ·
@@ -156,7 +189,8 @@ export function BuyBox({ product }: { product: Product }) {
       {/* Sticky phone bar. Desktop never sees it. */}
       <div
         className={cn(
-          'border-ink-line bg-ink/95 fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur-md transition-transform duration-300 lg:hidden',
+          'border-ink-line bg-ink/95 fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur-md',
+          'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden',
           inlineVisible ? 'translate-y-full' : 'translate-y-0',
         )}
         // `inert` keeps it out of the tab order while it is off-screen.
@@ -171,7 +205,7 @@ export function BuyBox({ product }: { product: Product }) {
             type="button"
             onClick={handleAdd}
             disabled={soldOut}
-            className={btn('primary', 'md', 'shrink-0')}
+            className={cn(btn('primary', 'md', 'shrink-0'), 'active:scale-[0.97]')}
           >
             {soldOut ? 'Sold out' : size ? `Add ${size}` : 'Add to cart'}
           </button>

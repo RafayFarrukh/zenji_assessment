@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MobileNav } from '@/components/MobileNav';
 import { SearchDialog } from '@/components/SearchDialog';
 import { Wordmark } from '@/components/Wordmark';
@@ -18,9 +18,12 @@ export function Header() {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [bumping, setBumping] = useState(false);
+
   const count = useCart(selectCount);
   const openCart = useCart((s) => s.open);
   const hydrated = useCartHydrated();
+  const previousCount = useRef(count);
 
   // Route change closes anything we left open.
   useEffect(() => {
@@ -40,6 +43,18 @@ export function Header() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  // The badge springs when something lands in it — this is what the flying
+  // product image is aimed at.
+  useEffect(() => {
+    if (count > previousCount.current) {
+      setBumping(true);
+      const id = setTimeout(() => setBumping(false), 460);
+      previousCount.current = count;
+      return () => clearTimeout(id);
+    }
+    previousCount.current = count;
+  }, [count]);
+
   return (
     <>
       <header className="border-ink-line bg-ink/90 sticky top-0 z-40 border-b backdrop-blur-md">
@@ -56,13 +71,21 @@ export function Header() {
                         href={link.href}
                         aria-current={active ? 'page' : undefined}
                         className={cn(
-                          'label border-b py-1 transition-colors',
-                          active
-                            ? 'border-flame text-bone'
-                            : 'text-ash hover:text-bone border-transparent',
+                          'label group text-ash hover:text-bone relative block py-1 transition-colors',
+                          active && 'text-bone',
                         )}
                       >
                         {link.label}
+                        {/* The underline draws in from the left rather than
+                            appearing all at once. */}
+                        <span
+                          aria-hidden
+                          className={cn(
+                            'bg-flame absolute -bottom-px left-0 h-px w-full origin-left',
+                            'transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                            active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                          )}
+                        />
                       </Link>
                     </li>
                   );
@@ -83,6 +106,7 @@ export function Header() {
 
             <button
               type="button"
+              data-cart-target
               onClick={openCart}
               className={cn(iconButton, 'relative')}
               aria-label={
@@ -91,9 +115,14 @@ export function Header() {
                   : 'Open cart'
               }
             >
-              <BagIcon className="h-5 w-5" />
+              <BagIcon className={cn('h-5 w-5', bumping && 'bump-once')} />
               {hydrated && count > 0 && (
-                <span className="bg-flame font-display text-bone absolute top-1 right-0.5 min-w-[18px] px-1 py-0.5 text-center text-[11px] leading-none">
+                <span
+                  className={cn(
+                    'bg-flame font-display text-bone absolute top-1 right-0.5 min-w-[18px] px-1 py-0.5 text-center text-[11px] leading-none',
+                    bumping && 'bump-once',
+                  )}
+                >
                   {count}
                 </span>
               )}

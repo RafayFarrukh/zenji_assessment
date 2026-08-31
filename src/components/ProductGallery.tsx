@@ -50,6 +50,8 @@ export function ProductGallery({ product }: { product: Product }) {
       style={{ '--accent': product.accent } as React.CSSProperties}
     >
       <div
+        // Where the flying copy of the product image launches from on add.
+        data-fly-source
         className="bg-ink-raised relative aspect-[4/5] flex-1 overflow-hidden"
         role="group"
         aria-roledescription="carousel"

@@ -9,12 +9,14 @@ const reset = () => useCart.setState({ items: [], isOpen: false, lastTouched: nu
 describe('cart store', () => {
   beforeEach(reset);
 
-  it('adds a line and opens the drawer', () => {
+  it('adds a line without deciding to open the drawer', () => {
     useCart.getState().add('blue-flame-tee', 'M');
     expect(useCart.getState().items).toEqual([
       { slug: 'blue-flame-tee', size: 'M', qty: 1 },
     ]);
-    expect(useCart.getState().isOpen).toBe(true);
+    // Opening the drawer is the caller's call, so the add choreography can
+    // finish landing before the panel covers it.
+    expect(useCart.getState().isOpen).toBe(false);
   });
 
   it('merges a repeat add into the existing line', () => {

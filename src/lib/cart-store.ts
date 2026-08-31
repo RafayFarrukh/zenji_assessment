@@ -12,6 +12,7 @@ type CartState = {
   isOpen: boolean;
   /** Key of the line we just touched, so the drawer can flash it. */
   lastTouched: string | null;
+  /** Adds stock-capped units. Opening the drawer is the caller's decision. */
   add: (slug: string, size: Size, qty?: number) => void;
   setQty: (slug: string, size: Size, qty: number) => void;
   remove: (slug: string, size: Size) => void;
@@ -47,7 +48,6 @@ export const useCart = create<CartState>()(
                 i.slug === slug && i.size === size ? { ...i, qty: nextQty } : i,
               )
             : [...state.items, { slug, size, qty: nextQty }],
-          isOpen: true,
           lastTouched: lineKey(slug, size),
         }));
       },
