@@ -1,103 +1,134 @@
-import Image from "next/image";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Hero } from '@/components/Hero';
+import { PosterCard } from '@/components/PosterCard';
+import { ProductGrid } from '@/components/ProductGrid';
+import { SectionHeading } from '@/components/Section';
+import { btn } from '@/components/ui/button';
+import { COLLECTION, getFeatured, getProduct, products } from '@/data/products';
 
-export default function Home() {
+const STREET_SLUGS = ['warrior-spirit-tee', 'demon-blood-tee', 'water-breathing-tee'];
+
+export default function HomePage() {
+  const hero = getProduct('blue-flame-tee');
+  const featured = getFeatured();
+  const street = STREET_SLUGS.map((slug) => getProduct(slug)).filter(
+    (p) => p !== undefined,
+  );
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      {hero && <Hero product={hero} />}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Collection strip */}
+      <section className="shell py-section">
+        <SectionHeading
+          eyebrow={COLLECTION}
+          title="Four that go first"
+          action={{ href: '/drop', label: 'All ten pieces' }}
+        />
+        <ul className="hide-scrollbar -mx-gutter px-gutter mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto md:mx-0 md:grid md:grid-cols-2 md:px-0 xl:grid-cols-4">
+          {featured.map((product) => (
+            <li
+              key={product.slug}
+              className="w-[72vw] shrink-0 snap-start sm:w-[46vw] md:w-auto"
+            >
+              <PosterCard product={product} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Manifesto */}
+      <section className="border-ink-line bg-ink-raised border-y">
+        <div className="shell py-section grid gap-10 lg:grid-cols-12 lg:gap-8">
+          <p className="label text-flame lg:col-span-3">Manifesto</p>
+          <div className="lg:col-span-9">
+            <p className="font-display text-display-l text-balance uppercase">
+              We make ten things properly, then we stop.
+            </p>
+            <div className="text-body-l text-ash mt-8 grid gap-6 md:grid-cols-2 md:gap-10">
+              <p className="max-w-[52ch]">
+                ZENJI started in a Melbourne bedroom with one screenprint and a group
+                chat. The rule has not changed since: heavyweight cotton, an oversized cut
+                that actually falls right, and artwork drawn for the piece rather than
+                pulled off a stock library.
+              </p>
+              <p className="max-w-[52ch]">
+                A drop is a fixed number of garments. When a size sells through, that is
+                the end of it — no reprints, no “back by popular demand”. It makes the
+                range harder to run and it is the entire point. What you own stays rare.
+              </p>
+            </div>
+            <dl className="border-ink-line mt-12 grid grid-cols-2 gap-y-8 border-t pt-8 md:grid-cols-4">
+              {[
+                ['240gsm', 'Heavyweight cotton'],
+                ['10', 'Pieces in the drop'],
+                ['0', 'Restocks, ever'],
+                ['A$150', 'Free shipping over'],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <dt className="font-display text-display-m">{value}</dt>
+                  <dd className="label text-ash mt-2">{label}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </section>
+
+      {/* Full range */}
+      <section className="shell py-section">
+        <SectionHeading
+          eyebrow="The full range"
+          title="All ten pieces"
+          action={{ href: '/drop', label: 'Filter and sort' }}
+        />
+        <div className="mt-10">
+          <ProductGrid products={products} />
+        </div>
+      </section>
+
+      {/* Lifestyle */}
+      <section className="border-ink-line border-t">
+        <div className="shell py-section">
+          <SectionHeading
+            eyebrow="Off the studio floor"
+            title="On the street"
+            action={{ href: '/lookbook', label: 'Full lookbook' }}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <ul className="mt-10 grid gap-4 md:grid-cols-3">
+            {street.map((product) => (
+              <li key={product.slug}>
+                <Link href={`/drop/${product.slug}`} className="group block">
+                  <div className="bg-ink-raised relative aspect-[3/4] overflow-hidden">
+                    <Image
+                      src={product.images.street}
+                      alt={`${product.name} worn on the street`}
+                      fill
+                      loading="lazy"
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <p className="label text-ash group-hover:text-bone mt-4 transition-colors">
+                    {product.name} — {product.colourway} →
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="border-ink-line mt-12 flex flex-wrap items-center gap-4 border-t pt-10">
+            <p className="font-display text-display-m uppercase">
+              The drop is live. Sizes are not coming back.
+            </p>
+            <Link href="/drop" className={btn('primary', 'lg', 'ml-auto')}>
+              Shop the drop
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
