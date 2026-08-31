@@ -87,6 +87,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // whole inherited tree.
     <html lang="en-AU" className={`${anton.variable} ${inter.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        {/* Reveals ship clipped so the wipe has somewhere to start. If the
+            bundle never arrives, nothing may stay hidden. */}
+        <noscript>
+          <style>{`[data-pass]{opacity:1!important;clip-path:none!important}.line-mask>span{transform:none!important}`}</style>
+        </noscript>
+
         <a
           href="#main"
           className="focus:bg-flame focus:text-bone sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2"
