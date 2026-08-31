@@ -12,8 +12,12 @@ Next.js 15 App Router + TypeScript (strict) + Tailwind v4. Package manager: pnpm
   use `cartTotals()` in `src/lib/pricing.ts`.
 - Tailwind only. No CSS modules. No inline styles except dynamic accent colours passed as CSS
   custom properties (`style={{ '--accent': product.accent }}`).
-- Motion: Framer Motion only in `Hero`, `CartDrawer`, `SearchDialog`. Everything else is CSS.
-  Always respect `prefers-reduced-motion`.
+- Motion follows "the pass" — see `DESIGN.md` §8. Prefer CSS; reach for Framer Motion only
+  where a value has to be read at runtime (scroll position, pointer position, springs).
+  Transform / opacity / `clip-path` only — never animate a property that shifts layout.
+  Anything that carries meaning must survive a paused `requestAnimationFrame` and a missing
+  bundle. Always respect `prefers-reduced-motion`, and never leave content hidden when the
+  animation will not play.
 - Every interactive element is keyboard reachable and shows a visible focus ring
   (`focus-visible:ring-2 focus-visible:ring-flame`).
 - Before finishing any task: `pnpm typecheck && pnpm lint && pnpm build` must pass.

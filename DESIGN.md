@@ -176,11 +176,58 @@ Ran the first pass against a "generic defaults" list and removed:
 - **Neon-green/magenta cyberpunk accent.** Every anime streetwear template reaches for it. The
   accent is now taken from the actual range (blue flame), and the loud colour lives in the
   photography instead.
-- **Scroll-triggered fade-ups on every section.** Cut entirely. One hero reveal, one drawer
-  transition, one image swap. Motion means something when it is rare.
+- **Scroll-triggered fade-ups on every section.** The generic version — everything drifting
+  up and fading in, identically, forever — is cut. What replaced it is a single named move
+  used everywhere (see §8), which is a system rather than a default.
 - **A centred hero with the headline over a darkened image.** Every Shopify theme. Replaced with
   the asymmetric split + kanji rail, which lets the portrait photography stay uncropped.
 - **Gradient section dividers and glow effects.** Replaced with hairline rules and negative space.
 - **A generic "SHOP NOW" CTA.** Every button now names its outcome.
-- **Card hover = scale up + shadow.** Replaced with the front→back image swap, which shows the
+- **Card hover = scale up + shadow.** Replaced with the front→back ink wipe, which shows the
   customer something they actually want (the back print is the whole point of these tees).
+- **A cyber/terminal motion kit** — scanlines, blinking cursors, glitch text. It is the first
+  thing anyone reaches for in this genre. The motion here comes from how the garments are
+  actually made instead.
+
+---
+
+## 8. Motion — "the pass"
+
+One idea, applied everywhere, rather than a pile of effects.
+
+**Every arrival is a hard-edged wipe with a hairline running ahead of it — ink pulled across
+a screen with a squeegee.** These are screen-printed tees; the way they are made is the way
+the site moves. Soft fades are the default this replaces.
+
+| Where                                | What                                                                                | How                                                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Section headings, copy blocks, cards | `clip-path` wipe left→right, 14px rise, 850ms                                       | CSS keyframe released by one shared IntersectionObserver |
+| Section headings only                | A 1px flame bar sweeps ahead of the wipe and leaves                                 | CSS, `.pass-bar`                                         |
+| Hero headline                        | Each line rides up from behind its own hard edge                                    | Pure CSS, staggered 90ms                                 |
+| Hero rail 一期一会                   | Draws top to bottom                                                                 | Pure CSS, `clip-path`                                    |
+| Hero photograph                      | Parallax: drifts at 14% of scroll while the copy pulls −18%                         | Framer Motion `useScroll`, spring-smoothed               |
+| Announcement bar                     | Drifts at rest; scroll velocity drives its speed, scroll direction flips it         | Framer Motion `useVelocity`                              |
+| Product cards                        | Front print → back print as a slanted ink wipe, colourway bar sweeping the top edge | CSS `clip-path` on `group-hover`/`group-focus-within`    |
+| Collection posters                   | Lean towards the cursor, colourway glows in from the edges                          | Pointer position written to CSS custom properties        |
+| Primary CTAs                         | Lean towards the cursor and spring back                                             | Framer Motion springs                                    |
+| Add to cart                          | The piece flies into the bag on an arc, the badge springs, then the drawer opens    | Web Animations API                                       |
+| No size chosen                       | The size row shakes and takes focus                                                 | CSS keyframe                                             |
+| Manifesto figures                    | Count up as they arrive                                                             | Framer Motion `animate`                                  |
+| Next drop                            | Live counter; changed digits ride up from behind an edge                            | `key` remount + CSS                                      |
+| Route change                         | The page rises 12px                                                                 | `template.tsx`, transform only                           |
+
+**The rules that keep it from becoming noise**
+
+1. **Transform, opacity and `clip-path` only.** Nothing here can shift layout — CLS stays 0.
+2. **Nothing that carries meaning may depend on a frame ever being rendered.** The hero entry
+   is pure CSS, so it plays in a backgrounded tab where `requestAnimationFrame` is paused and
+   a JS reveal would never fire. A root `<noscript>` rule un-hides every scroll reveal.
+3. **The LCP element never animates in.** The hero photograph paints as soon as its bytes
+   land; a fade would push the largest-contentful paint by the length of the fade.
+4. **Pointer effects are gated on `(pointer: fine)`.** A tilt has nothing to follow on a
+   touch screen and only fights the tap.
+5. **One observer, not forty.** All scroll reveals share a single IntersectionObserver, and
+   pointer tracking writes CSS custom properties directly rather than going through state —
+   so scrolling and hovering cost no React renders.
+6. **`prefers-reduced-motion` removes it, and never leaves anything hidden.** Verified: 24
+   reveal elements, 0 still clipped.
