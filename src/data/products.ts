@@ -16,6 +16,10 @@ export const FREE_SHIPPING_THRESHOLD_AUD = 150;
 export const STANDARD_SHIPPING_AUD = 9.95;
 export const EXPRESS_SHIPPING_AUD = 14.95;
 
+/** When the next drop lands. Fixed date so the countdown is deterministic. */
+export const NEXT_DROP_AT = '2026-10-03T19:00:00+10:00';
+export const NEXT_DROP_NAME = 'Drop 02 — Shadow Work';
+
 /**
  * The whole catalogue. Ten pieces, one drop, no restocks — so this is a typed
  * constant rather than a database. Server Components read it directly.
