@@ -26,9 +26,14 @@ function shared(): IntersectionObserver {
         observer?.unobserve(entry.target);
       }
     },
-    // Fire a little before the element is fully on screen so the wipe has
-    // finished by the time the reader's eye reaches it.
-    { rootMargin: '0px 0px -8% 0px', threshold: 0 },
+    // Vertically: fire a little before the element is fully on screen, so the
+    // wipe has finished by the time the reader's eye reaches it.
+    //
+    // Horizontally: reach two viewport widths either side. Cards parked
+    // off-screen in a horizontal carousel are already where the reader is
+    // looking vertically, and waiting for a swipe to reveal them risks showing
+    // a blank card mid-gesture.
+    { rootMargin: '0px 200% -8% 200%', threshold: 0 },
   );
   return observer;
 }
