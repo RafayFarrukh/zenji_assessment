@@ -6,8 +6,8 @@ through cart and checkout to a confirmed order.
 
 Built as a frontend assessment. Next.js 15 App Router, TypeScript strict, Tailwind v4.
 
-- **Live:** _add your deployment URL here_
-- **Repo:** _add your repository URL here_
+- **Live:** https://zenjiassessment.vercel.app
+- **Repo:** https://github.com/RafayFarrukh/zenji_assessment
 
 ![The home page hero on desktop](docs/screenshots/01-home-hero.webp)
 
