@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { BackPrint } from '@/components/BackPrint';
 import { Badge } from '@/components/ui/Badge';
 import { Price } from '@/components/ui/Price';
 import { cn } from '@/lib/cn';
@@ -45,16 +46,7 @@ export function ProductCard({
     >
       <Link href={`/drop/${product.slug}`} className="block focus-visible:outline-none">
         <div className="bg-ink-raised relative aspect-[4/5] overflow-hidden">
-          {!soldOut && (
-            <Image
-              src={product.images.back}
-              alt=""
-              fill
-              sizes={sizes}
-              loading="lazy"
-              className="object-cover"
-            />
-          )}
+          {!soldOut && <BackPrint src={product.images.back} sizes={sizes} />}
 
           <Image
             src={product.images.front}
