@@ -1,12 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
-
-type PassState = 'out' | 'in';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * One IntersectionObserver for the whole page rather than one per element —
  * a product grid alone would otherwise create forty of them.
+ *
+ * `threshold: 0` is deliberate and load-bearing. Chromium factors a target's
+ * own `clip-path` into `intersectionRatio`, so an element hidden by a clip
+ * reports a ratio of 0 no matter how much of it is on screen. Any non-zero
+ * threshold on a clipped target therefore deadlocks: it stays hidden because it
+ * is hidden. Callers must observe an unclipped node (see `Pass`), and this
+ * keeps the second lock off the door as well.
  */
 let observer: IntersectionObserver | null = null;
 const listeners = new WeakMap<Element, () => void>();
@@ -23,7 +28,7 @@ function shared(): IntersectionObserver {
     },
     // Fire a little before the element is fully on screen so the wipe has
     // finished by the time the reader's eye reaches it.
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0 },
   );
   return observer;
 }
@@ -32,6 +37,8 @@ function shared(): IntersectionObserver {
  * Fires once, the first time the element reaches the viewport. Anything already
  * on screen at mount — a deep link, a restored scroll position — resolves
  * immediately rather than waiting for a scroll that may never come.
+ *
+ * Attach this to an element that is never visually clipped.
  */
 export function useInView(): [(node: HTMLElement | null) => void, boolean] {
   const [inView, setInView] = useState(false);
@@ -58,29 +65,4 @@ export function useInView(): [(node: HTMLElement | null) => void, boolean] {
   useEffect(() => () => cleanup.current?.(), []);
 
   return [ref, inView];
-}
-
-export type PassProps = {
-  ref: (node: HTMLElement | null) => void;
-  'data-pass': PassState;
-  style: CSSProperties;
-};
-
-/**
- * Releases "the pass" — the hard-edged wipe defined in globals.css — the first
- * time an element scrolls into view. The animation itself is pure CSS, so
- * scrolling costs nothing per frame; this only flips an attribute.
- *
- * Anything above the fold should be left out of this: the markup ships with the
- * element clipped, and a root <noscript> rule is what saves it if the bundle
- * never arrives.
- */
-export function usePass(delay = 0): PassProps {
-  const [ref, inView] = useInView();
-
-  return {
-    ref,
-    'data-pass': inView ? 'in' : 'out',
-    style: { '--pass-delay': `${delay}ms` } as CSSProperties,
-  };
 }

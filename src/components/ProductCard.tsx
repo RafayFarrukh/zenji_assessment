@@ -8,11 +8,20 @@ import type { Product } from '@/lib/types';
 
 const GRID_SIZES = '(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw';
 
+/** Front print at rest; on hover it is wiped off to the right at a slant. */
+const FRONT_AT_REST = 'polygon(0% 0%, 118% 0%, 100% 100%, 0% 100%)';
+const FRONT_WIPED = 'polygon(118% 0%, 118% 0%, 100% 100%, 100% 100%)';
+
 /**
  * The back print is the reason people buy these tees, so hovering reveals it —
- * but as a slanted ink wipe rather than a crossfade. The card's own colourway
- * runs across the top on the same beat, which is the only other place a
- * per-product accent is allowed to show up in the grid.
+ * as a slanted ink wipe rather than a crossfade, with the piece's own colourway
+ * running across the top edge on the same beat.
+ *
+ * The back image sits underneath, unclipped, and the FRONT is wiped away. Doing
+ * it the other way round (clipping the back until hover) looks identical but
+ * gives the back image zero area, and Chrome will not fetch a lazy image with
+ * no area — so the first hover on every card revealed a blank frame while the
+ * download started.
  *
  * Everything is driven by `group-hover` and `group-focus-within`, so a keyboard
  * user gets exactly what a mouse user gets.
@@ -36,19 +45,6 @@ export function ProductCard({
     >
       <Link href={`/drop/${product.slug}`} className="block focus-visible:outline-none">
         <div className="bg-ink-raised relative aspect-[4/5] overflow-hidden">
-          <Image
-            src={product.images.front}
-            alt={`${product.name} in ${product.colourway}, front print`}
-            fill
-            sizes={sizes}
-            priority={priority}
-            className={cn(
-              'object-cover transition-transform duration-[900ms] ease-out',
-              !soldOut && 'group-focus-within:scale-[1.04] group-hover:scale-[1.04]',
-              soldOut && 'opacity-45 grayscale',
-            )}
-          />
-
           {!soldOut && (
             <Image
               src={product.images.back}
@@ -56,14 +52,31 @@ export function ProductCard({
               fill
               sizes={sizes}
               loading="lazy"
-              className={
-                'object-cover transition-[clip-path] duration-[850ms] ease-[cubic-bezier(0.16,1,0.3,1)] ' +
-                '[clip-path:polygon(0_0,0_0,0_100%,0_100%)] ' +
-                'group-hover:[clip-path:polygon(0_0,118%_0,100%_100%,0_100%)] ' +
-                'group-focus-within:[clip-path:polygon(0_0,118%_0,100%_100%,0_100%)]'
-              }
+              className="object-cover"
             />
           )}
+
+          <Image
+            src={product.images.front}
+            alt={`${product.name} in ${product.colourway}, front print`}
+            fill
+            sizes={sizes}
+            priority={priority}
+            style={
+              soldOut
+                ? undefined
+                : ({
+                    clipPath: FRONT_AT_REST,
+                    '--wipe': FRONT_WIPED,
+                  } as React.CSSProperties)
+            }
+            className={cn(
+              'object-cover transition-[clip-path,transform] duration-[850ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
+              !soldOut &&
+                'group-focus-within:[clip-path:var(--wipe)] group-hover:[clip-path:var(--wipe)]',
+              soldOut && 'opacity-45 grayscale',
+            )}
+          />
 
           {/* The squeegee edge, in the piece's own colourway */}
           {!soldOut && (

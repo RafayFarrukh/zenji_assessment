@@ -1,12 +1,21 @@
 'use client';
 
+import { type CSSProperties } from 'react';
+import { useInView } from '@/components/motion/use-pass';
 import { cn } from '@/lib/cn';
-import { usePass } from '@/components/motion/use-pass';
 
 /**
- * Wrapper form of `usePass`. `bar` adds the squeegee — a hairline that runs
- * ahead of the wipe and leaves. Reserve it for section headings; on every
- * element it would be noise.
+ * Releases "the pass" — the hard-edged wipe defined in globals.css — the first
+ * time the element scrolls into view. The animation is pure CSS; this only
+ * flips an attribute, so scrolling costs nothing per frame.
+ *
+ * The observer watches the OUTER wrapper and the wipe is applied to the INNER
+ * one. That separation is not cosmetic: Chromium counts a target's own
+ * `clip-path` against its `intersectionRatio`, so observing the clipped node
+ * would mean observing something that can never report itself as visible.
+ *
+ * `bar` adds the squeegee — a hairline that runs ahead of the wipe and leaves.
+ * Reserve it for section headings; on every element it would be noise.
  */
 export function Pass({
   children,
@@ -19,18 +28,21 @@ export function Pass({
   bar?: boolean;
   className?: string;
 }) {
-  const pass = usePass(delay);
+  const [ref, inView] = useInView();
+  const style = { '--pass-delay': `${delay}ms` } as CSSProperties;
 
   return (
-    <div className={cn('relative', className)}>
-      {bar && pass['data-pass'] !== 'out' && (
+    <div ref={ref} className={cn('relative', className)}>
+      {bar && inView && (
         <span
           aria-hidden
           className="pass-bar bg-flame absolute -top-px left-0 z-10 h-px w-full"
-          style={pass.style}
+          style={style}
         />
       )}
-      <div {...pass}>{children}</div>
+      <div data-pass={inView ? 'in' : 'out'} style={style}>
+        {children}
+      </div>
     </div>
   );
 }
