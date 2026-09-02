@@ -1,0 +1,30 @@
+ZENJI — Web Developer Assessment
+Rafay Farrukh
+
+
+LIVE SITE
+https://zenjiassessment.vercel.app
+
+REPOSITORY
+https://github.com/RafayFarrukh/zenji_assessment
+
+
+An anime-inspired streetwear storefront for ZENJI, built as a frontend with
+Next.js 15 (App Router), TypeScript strict and Tailwind v4.
+
+Ten pieces, limited stock, no restocks. The full shop flow works end to end:
+browse the drop, open a product, pick a size, add to cart, check out, and get
+a confirmed order with an order number.
+
+Also included: lookbook, our story, FAQ with a size guide, 404, client-side
+search, per-page SEO metadata, sitemap, robots and Product JSON-LD.
+
+No backend, database, auth or payment integration, as briefed. Products are
+typed data; the cart lives in localStorage; no card details are requested.
+
+Notes on quality are in the repository README.
+
+
+Rafay Farrukh
+rafayfarrukh941@gmail.com
++92 313 4079795
