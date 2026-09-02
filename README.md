@@ -142,11 +142,18 @@ Measured on the production build (`pnpm build && pnpm start`), driven over CDP:
 - **The motion degrades in all three directions it can.** The hero entry is pure CSS, so it
   plays in a backgrounded tab where `requestAnimationFrame` is paused and a JavaScript
   reveal would never fire. A root `<noscript>` rule un-hides every scroll reveal. Under
-  `prefers-reduced-motion` all of it stops — verified as 24 reveal elements, 0 left hidden.
+  `prefers-reduced-motion` all of it stops — verified as 20 reveal elements, 0 left hidden.
 - **~102kB of shared JS** (First Load), 103–169kB per route.
 - **No console errors or warnings** on any route.
 - **No horizontal overflow** at 320, 360, 390, 414, 480, 640, 768, 1024, 1280, 1440, 1920 or
-  2560px — checked on every route.
+  2560px — 42 route/width combinations audited against the deployed site, all clean.
+- **Product images are cached, not revalidated.** Files under `public/` are served with
+  `max-age=0` by default and `next/image` copies that onto the optimised output, so every
+  page view re-requested all 28 images; they are now immutable for a year. A repeat visit
+  fetches 0 bytes of imagery.
+- **The back print is only downloaded where hover exists.** It is revealed on hover, so a
+  touch device can never see it — skipping it on coarse pointers halves the image requests
+  on the drop listing (20 → 10) on exactly the connections that can least afford them.
 - **Keyboard**: skip link is the first tab stop; every interactive element is reachable and
   shows a 2px flame focus ring; sold-out sizes are correctly skipped; the cart drawer traps
   Tab, closes on Escape, and returns focus to the trigger; `⌘K` opens search.
