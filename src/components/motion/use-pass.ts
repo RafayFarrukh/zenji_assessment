@@ -26,14 +26,14 @@ function shared(): IntersectionObserver {
         observer?.unobserve(entry.target);
       }
     },
-    // Vertically: fire a little before the element is fully on screen, so the
-    // wipe has finished by the time the reader's eye reaches it.
+    // Fire a little before the element is fully on screen so the wipe has
+    // finished by the time the reader's eye reaches it.
     //
-    // Horizontally: reach two viewport widths either side. Cards parked
-    // off-screen in a horizontal carousel are already where the reader is
-    // looking vertically, and waiting for a swipe to reveal them risks showing
-    // a blank card mid-gesture.
-    { rootMargin: '0px 200% -8% 200%', threshold: 0 },
+    // Note that a horizontal rootMargin would NOT reach items parked off-screen
+    // inside an overflow-x container: an intermediate scroll container clips
+    // its children before the root rect is ever considered. Anything living in
+    // a carousel must therefore be revealed by its container, not per item.
+    { rootMargin: '0px 0px -8% 0px', threshold: 0 },
   );
   return observer;
 }

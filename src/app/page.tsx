@@ -46,14 +46,12 @@ export default function HomePage() {
           data-scroller
           className="hide-scrollbar -mx-gutter px-gutter mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto md:mx-0 md:grid md:grid-cols-2 md:px-0 xl:grid-cols-4"
         >
-          {featured.map((product, i) => (
+          {featured.map((product) => (
             <li
               key={product.slug}
               className="w-[72vw] shrink-0 snap-start sm:w-[46vw] md:w-auto"
             >
-              <Pass delay={i * 80}>
-                <PosterCard product={product} />
-              </Pass>
+              <PosterCard product={product} />
             </li>
           ))}
         </ul>
